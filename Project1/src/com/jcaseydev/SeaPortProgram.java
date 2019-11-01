@@ -117,11 +117,11 @@ public class SeaPortProgram extends JFrame {
         break;
     }
 
-    worldTextArea.append(textAreaToString(results));
+    worldTextArea.append(textAreaToString(results, query));
   }
 
-  private String textAreaToString(ArrayList<Thing> results) {
-    StringBuilder out = new StringBuilder("\nSearch Results: ");
+  private String textAreaToString(ArrayList<Thing> results, String query) {
+    StringBuilder out = new StringBuilder("\nSearch Results for " + query + ": ");
     if (results.isEmpty()) {
       out.append("\n NO RESULTS");
     } else {
