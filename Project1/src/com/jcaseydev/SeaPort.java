@@ -58,19 +58,19 @@ public class SeaPort extends Thing {
       output.append("\n").append(dock);
     }
 
-    output.append("\n ---- List of ships in que");
+    output.append("\n\n ---- List of ships in que");
 
     for (Ship ship : que) {
       output.append("\n > ").append(ship);
     }
 
-    output.append("\n ---- List of ships");
+    output.append("\n\n ---- List of ships");
 
     for (Ship ship : ships) {
       output.append("\n > ").append(ship);
     }
 
-    output.append("\n ---- List of people");
+    output.append("\n\n ---- List of people");
 
     for (Person person : persons) {
       output.append("\n > ").append(person);

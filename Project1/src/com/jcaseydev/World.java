@@ -14,6 +14,7 @@ public class World extends Thing {
   }
 
   void createObjects(String line) {
+    System.out.println("Processing >" + line);
     Scanner scanner = new Scanner(line);
 
     if (!scanner.hasNext() || line.startsWith("//")) {
@@ -21,32 +22,39 @@ public class World extends Thing {
     }
 
     switch (scanner.next()) {
-      case "pship":
-//        PassengerShip passengerShip = new PassengerShip(scanner);
-//        Dock passengerDock = getDockByIndex(passengerShip.getParent());
-//        SeaPort passengerPort = getSeaPortByIndex(passengerShip.getParent());
-//        SeaPort passengerDockPort = null;
-//        if (passengerDock != null) {
-//          passengerDockPort = getSeaPortByIndex(passengerDock.getParent());
-//        }
-//        addShip(passengerPort, passengerDockPort, passengerDock, passengerShip);
-        addShip(new PassengerShip(scanner));
-        break;
-
-//      case "cship":
-//        CargoShip cargoShip = new CargoShip(scanner);
-//        Dock cargoDock = getDockByIndex(cargoShip.getParent());
-//        SeaPort cargoPort = getSeaPortByIndex(cargoShip.getParent());
-//        SeaPort cargoDockPort = null;
-//        if (cargoDock != null) {
-//          cargoDockPort = getSeaPortByIndex(cargoDock.getParent());
-//        }
-//        addShip(cargoPort, cargoDockPort, cargoDock, cargoShip);
-//        break;
-
       case "port":
         SeaPort port = new SeaPort(scanner);
         addPort(port);
+        break;
+
+      case "dock":
+        Dock dock = new Dock(scanner);
+        SeaPort dockPort = getSeaPortByIndex(dock.getParent());
+        if (dockPort != null) {
+          addDock(dockPort, dock);
+        }
+        break;
+
+      case "pship":
+        PassengerShip passengerShip = new PassengerShip(scanner);
+        Dock passengerDock = getDockByIndex(passengerShip.getParent());
+        SeaPort passengerPort = getSeaPortByIndex(passengerShip.getParent());
+        SeaPort passengerDockPort = null;
+        if (passengerDock != null) {
+          passengerDockPort = getSeaPortByIndex(passengerDock.getParent());
+        }
+        addShip(passengerPort, passengerDockPort, passengerDock, passengerShip);
+        break;
+
+      case "cship":
+        CargoShip cargoShip = new CargoShip(scanner);
+        Dock cargoDock = getDockByIndex(cargoShip.getParent());
+        SeaPort cargoPort = getSeaPortByIndex(cargoShip.getParent());
+        SeaPort cargoDockPort = null;
+        if (cargoDock != null) {
+          cargoDockPort = getSeaPortByIndex(cargoDock.getParent());
+        }
+        addShip(cargoPort, cargoDockPort, cargoDock, cargoShip);
         break;
 
       case "person":
@@ -54,14 +62,6 @@ public class World extends Thing {
         SeaPort personPort = getSeaPortByIndex(person.getParent());
         if (personPort != null) {
           addPerson(personPort, person);
-        }
-        break;
-
-      case "dock":
-        Dock dock = new Dock(scanner);
-        SeaPort dockPort = getSeaPortByIndex(dock.getIndex());
-        if (dockPort != null) {
-          addDock(dockPort, dock);
         }
         break;
     }
@@ -79,26 +79,16 @@ public class World extends Thing {
     port.getDocks().add(dock);
   }
 
-  private void addShip(Ship ship) {
-    Dock md = getDockByIndex(ship.getParent());
-    if (md == null) {
-      getSeaPortByIndex(ship.getParent()).getShips().add(ship);
-      getSeaPortByIndex(ship.getParent()).getQue().add(ship);
+  private void addShip(SeaPort port, SeaPort dockPort, Dock dock, Ship ship) {
+    if (dock == null) {
+      port.getShips().add(ship);
+      port.getQue().add(ship);
       return;
     }
 
-    md.setShip(ship);
-    getSeaPortByIndex(md.getParent()).getShips().add(ship);
+    dock.setShip(ship);
+    dockPort.getShips().add(ship);
   }
-//  private void addShip(SeaPort port, SeaPort dPort, Dock dock, Ship ship) {
-//    if (dock == null) {
-//      port.getShips().add (ship);
-//      port.getQue().add (ship);
-//      return;
-//    }
-//    dock.setShip(ship);
-//    dPort.getShips().add (ship);
-//  }
 
   private SeaPort getSeaPortByIndex(int index) {
     for (SeaPort port : ports) {

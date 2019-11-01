@@ -3,7 +3,6 @@ package com.jcaseydev;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.io.FileNotFoundException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Scanner;
@@ -123,9 +122,9 @@ public class SeaPortProgram extends JFrame {
 
   private String textAreaToString(ArrayList<Thing> results) {
     StringBuilder out = new StringBuilder("\nSearch Results: ");
-    if (results.isEmpty())
+    if (results.isEmpty()) {
       out.append("\n NO RESULTS");
-    else {
+    } else {
       for (Thing thing : results) {
         out.append("\n ").append(thing);
       }
