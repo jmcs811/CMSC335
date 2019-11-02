@@ -1,5 +1,13 @@
 package com.jcaseydev;
 
+/////////////////
+// File: Ship.java
+// Date: 1 Nov 2019
+// Author: Justin Casey
+// Purpose: Class defining the Ship
+// object.
+//
+
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -13,6 +21,7 @@ public class Ship extends Thing {
   private double width;
   private ArrayList<Job> jobs;
 
+  // constructor
   Ship(Scanner scanner) {
     super(scanner);
     if (scanner.hasNextDouble()) {
@@ -33,6 +42,7 @@ public class Ship extends Thing {
     System.out.println("done with ship");
   }
 
+  // getters and setters
   public PortTime getArrivalTime() {
     return arrivalTime;
   }
@@ -89,6 +99,7 @@ public class Ship extends Thing {
     this.jobs = jobs;
   }
 
+  // toString
   @Override
   public String toString() {
     return super.toString();

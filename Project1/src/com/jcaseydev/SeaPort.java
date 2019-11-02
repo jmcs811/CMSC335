@@ -1,5 +1,13 @@
 package com.jcaseydev;
 
+/////////////////
+// File: SeaPort.java
+// Date: 1 Nov 2019
+// Author: Justin Casey
+// Purpose: Class defining the SeaPort
+// object.
+//
+
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -10,6 +18,7 @@ public class SeaPort extends Thing {
   private ArrayList<Ship> ships;
   private ArrayList<Person> persons;
 
+  // constructor
   SeaPort(Scanner scanner) {
     super(scanner);
     docks = new ArrayList<>();
@@ -18,6 +27,7 @@ public class SeaPort extends Thing {
     persons = new ArrayList<>();
   }
 
+  // getters and setters
   ArrayList<Dock> getDocks() {
     return docks;
   }
@@ -50,6 +60,7 @@ public class SeaPort extends Thing {
     this.persons = persons;
   }
 
+  // to string method
   @Override
   public String toString() {
     StringBuilder output = new StringBuilder("\nSeaPort: " + super.toString());

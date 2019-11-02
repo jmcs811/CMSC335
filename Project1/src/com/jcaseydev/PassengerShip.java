@@ -1,5 +1,13 @@
 package com.jcaseydev;
 
+/////////////////
+// File: PassengerShip.java
+// Date: 1 Nov 2019
+// Author: Justin Casey
+// Purpose: Class defining the passenger
+// ship object.
+//
+
 import java.util.Scanner;
 
 public class PassengerShip extends Ship {
@@ -8,6 +16,7 @@ public class PassengerShip extends Ship {
   private int numberOfPassengers;
   private int numberOfRooms;
 
+  // constructor
   PassengerShip(Scanner scanner) {
     super(scanner);
     if (scanner.hasNextInt()) {
@@ -24,6 +33,7 @@ public class PassengerShip extends Ship {
     System.out.println("done with p ship");
   }
 
+  // getters and setters
   public int getNumberOfOccupiedRooms() {
     return numberOfOccupiedRooms;
   }
@@ -48,6 +58,7 @@ public class PassengerShip extends Ship {
     this.numberOfRooms = numberOfRooms;
   }
 
+  // to string
   @Override
   public String toString() {
     return "Passenger Ship: " + super.toString();

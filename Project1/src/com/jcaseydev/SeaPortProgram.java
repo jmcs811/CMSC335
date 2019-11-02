@@ -1,5 +1,13 @@
 package com.jcaseydev;
 
+/////////////////
+// File: SeaPortProgram.java
+// Date: 1 Nov 2019
+// Author: Justin Casey
+// Purpose: Class that defines
+// the GUI for the program.
+//
+
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.io.FileNotFoundException;
@@ -23,6 +31,7 @@ public class SeaPortProgram extends JFrame {
   private Scanner scanner;
   private JTextArea worldTextArea;
 
+  // constructor
   private SeaPortProgram() {
     setTitle("SeaPort");
     setSize(500, 500);
@@ -36,10 +45,12 @@ public class SeaPortProgram extends JFrame {
     JPanel search = new JPanel();
     JPanel world = new JPanel();
 
+    // set boarders
     file.setBorder(new TitledBorder("File"));
     search.setBorder(new TitledBorder("Search"));
     world.setBorder(new TitledBorder("World"));
 
+    // create buttons
     JButton readButton = new JButton("Read");
     JButton showButton = new JButton("Show");
     JButton searchButton = new JButton("Search");
@@ -56,6 +67,7 @@ public class SeaPortProgram extends JFrame {
     worldTextArea.setFont(new java.awt.Font("Monospaced", Font.PLAIN, 12));
     JScrollPane worldScrollPane = new JScrollPane(worldTextArea);
 
+    // add buttons to file panel
     file.add(readButton);
     file.add(showButton);
     file.add(searchField);
@@ -79,6 +91,7 @@ public class SeaPortProgram extends JFrame {
         .requireNonNull(searchComboBox.getSelectedItem()), searchField.getText()));
   }
 
+  // method to show file chooser and read the file
   private void read() {
     JFileChooser jFileChooser = new JFileChooser(".");
     FileNameExtensionFilter filter = new FileNameExtensionFilter("Text Files", "txt", "text");
@@ -99,6 +112,7 @@ public class SeaPortProgram extends JFrame {
     }
   }
 
+  // search method
   private void search(String type, String query) {
     ArrayList<Thing> results = new ArrayList<>();
 
@@ -120,6 +134,7 @@ public class SeaPortProgram extends JFrame {
     worldTextArea.append(textAreaToString(results, query));
   }
 
+  // convert ArrayList to a string to show in the text area
   private String textAreaToString(ArrayList<Thing> results, String query) {
     StringBuilder out = new StringBuilder("\nSearch Results for " + query + ": ");
     if (results.isEmpty()) {
@@ -136,6 +151,7 @@ public class SeaPortProgram extends JFrame {
     worldTextArea.append(world.toString());
   }
 
+  // main method for the program. Creates a SeaPortProgram instance.
   public static void main(String[] args) {
     SeaPortProgram program = new SeaPortProgram();
   }

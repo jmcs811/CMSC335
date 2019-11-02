@@ -8,13 +8,15 @@ public class World extends Thing {
   private ArrayList<SeaPort> ports;
   private PortTime time;
 
+  // constructor
   World(Scanner scanner) {
     super(scanner);
     ports = new ArrayList<>();
   }
 
+  // method to read the line and create the
+  // specified object
   void createObjects(String line) {
-    System.out.println("Processing >" + line);
     Scanner scanner = new Scanner(line);
 
     if (!scanner.hasNext() || line.startsWith("//")) {
@@ -67,6 +69,8 @@ public class World extends Thing {
     }
   }
 
+  // methods to add the specified object to the
+  // ArrayList of that object.
   private void addPerson(SeaPort personPort, Person person) {
     personPort.getPersons().add(person);
   }
@@ -90,6 +94,7 @@ public class World extends Thing {
     dockPort.getShips().add(ship);
   }
 
+  // Get objects by index methods
   private SeaPort getSeaPortByIndex(int index) {
     for (SeaPort port : ports) {
       if (port.getIndex() == index) {
@@ -121,6 +126,7 @@ public class World extends Thing {
     return null;
   }
 
+  // getters and setters
   public ArrayList<SeaPort> getPorts() {
     return ports;
   }
@@ -137,6 +143,7 @@ public class World extends Thing {
     this.time = time;
   }
 
+  // methods for searching
   ArrayList<Thing> indexSearch(ArrayList<Thing> results, int index) {
     for (SeaPort port : ports) {
       if (port.getIndex() == index) {
@@ -223,6 +230,7 @@ public class World extends Thing {
     return results;
   }
 
+  // toString
   @Override
   public String toString() {
     StringBuilder output = new StringBuilder("\n>>> World: ");
