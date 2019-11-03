@@ -31,7 +31,6 @@ public class Thing implements Comparable {
     if (scanner.hasNextInt()) {
       parent = scanner.nextInt();
     }
-    System.out.println("done with thing");
   }
 
   // getters and setters

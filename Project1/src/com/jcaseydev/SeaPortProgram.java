@@ -60,7 +60,7 @@ public class SeaPortProgram extends JFrame {
     JComboBox<String> searchComboBox = new JComboBox<>();
     searchComboBox.addItem("Index");
     searchComboBox.addItem("Name");
-    searchComboBox.addItem("SKill");
+    searchComboBox.addItem("Skill");
     searchComboBox.addItem("Type");
 
     worldTextArea = new JTextArea(20, 61);

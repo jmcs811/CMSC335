@@ -30,8 +30,6 @@ public class CargoShip extends Ship {
     if (scanner.hasNextDouble()) {
       cargoValue = scanner.nextDouble();
     }
-
-    System.out.println("done with c ship");
   }
 
   // getter and setter methods

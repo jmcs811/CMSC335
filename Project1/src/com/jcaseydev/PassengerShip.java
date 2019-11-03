@@ -30,7 +30,6 @@ public class PassengerShip extends Ship {
     if (scanner.hasNextInt()) {
       numberOfOccupiedRooms = scanner.nextInt();
     }
-    System.out.println("done with p ship");
   }
 
   // getters and setters

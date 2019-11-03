@@ -39,7 +39,6 @@ public class Ship extends Thing {
     if (scanner.hasNextDouble()) {
       draft = scanner.nextDouble();
     }
-    System.out.println("done with ship");
   }
 
   // getters and setters
