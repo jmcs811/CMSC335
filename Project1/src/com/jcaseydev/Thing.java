@@ -12,7 +12,7 @@ package com.jcaseydev;
 
 import java.util.Scanner;
 
-public class Thing implements Comparable {
+public class Thing implements Comparable<Thing> {
 
   private int index;
   private String name;
@@ -59,9 +59,12 @@ public class Thing implements Comparable {
   }
 
   // compareTo method. Will be used later
-  @Override
-  public int compareTo(Object o) {
-    return 0;
+  public int compareTo(Thing o) {
+    int indexCompare = Integer.compare(this.index, o.index);
+    if (indexCompare != 0) {
+      return indexCompare;
+    }
+    return this.name.compareTo(o.name);
   }
 
   // toString

@@ -1,6 +1,7 @@
 package com.jcaseydev;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class World extends Thing {
@@ -16,114 +17,77 @@ public class World extends Thing {
 
   // method to read the line and create the
   // specified object
-  void createObjects(String line) {
-    Scanner scanner = new Scanner(line);
+  void createObjects(Scanner file) {
+    HashMap<Integer, SeaPort> ports = new HashMap<>();
+    HashMap<Integer, Dock> docks = new HashMap<>();
+    HashMap<Integer, Ship> ships = new HashMap<>();
+    HashMap<Integer, Person> persons = new HashMap<>();
 
-    if (!scanner.hasNext() || line.startsWith("//")) {
-      return;
+    while (file.hasNextLine()) {
+      String line = file.nextLine().trim();
+      Scanner sc = new Scanner(line);
+
+      if (sc.hasNext() && !line.startsWith("//")) {
+        switch (sc.next()) {
+          case "port":
+            SeaPort seaPort = new SeaPort(sc);
+            addPort(seaPort);
+            ports.put(seaPort.getIndex(), seaPort);
+            break;
+          case "dock":
+            Dock dock = new Dock(sc);
+            addDock(ports, dock);
+            docks.put(dock.getIndex(), dock);
+            break;
+          case "pship":
+            PassengerShip pShip = new PassengerShip(sc);
+            addShip(ports, docks, pShip);
+            ships.put(pShip.getIndex(), pShip);
+            break;
+          case "cship":
+            CargoShip cShip = new CargoShip(sc);
+            addShip(ports, docks, cShip);
+            ships.put(cShip.getIndex(), cShip);
+            break;
+          case "person":
+            Person person = new Person(sc);
+            addPerson(ports, person);
+            persons.put(person.getIndex(), person);
+            break;
+        }
+      }
     }
 
-    switch (scanner.next()) {
-      case "port":
-        SeaPort port = new SeaPort(scanner);
-        addPort(port);
-        break;
-
-      case "dock":
-        Dock dock = new Dock(scanner);
-        SeaPort dockPort = getSeaPortByIndex(dock.getParent());
-        if (dockPort != null) {
-          addDock(dockPort, dock);
-        }
-        break;
-
-      case "pship":
-        PassengerShip passengerShip = new PassengerShip(scanner);
-        Dock passengerDock = getDockByIndex(passengerShip.getParent());
-        SeaPort passengerPort = getSeaPortByIndex(passengerShip.getParent());
-        SeaPort passengerDockPort = null;
-        if (passengerDock != null) {
-          passengerDockPort = getSeaPortByIndex(passengerDock.getParent());
-        }
-        addShip(passengerPort, passengerDockPort, passengerDock, passengerShip);
-        break;
-
-      case "cship":
-        CargoShip cargoShip = new CargoShip(scanner);
-        Dock cargoDock = getDockByIndex(cargoShip.getParent());
-        SeaPort cargoPort = getSeaPortByIndex(cargoShip.getParent());
-        SeaPort cargoDockPort = null;
-        if (cargoDock != null) {
-          cargoDockPort = getSeaPortByIndex(cargoDock.getParent());
-        }
-        addShip(cargoPort, cargoDockPort, cargoDock, cargoShip);
-        break;
-
-      case "person":
-        Person person = new Person(scanner);
-        SeaPort personPort = getSeaPortByIndex(person.getParent());
-        if (personPort != null) {
-          addPerson(personPort, person);
-        }
-        break;
-    }
   }
 
   // methods to add the specified object to the
   // ArrayList of that object.
-  private void addPerson(SeaPort personPort, Person person) {
-    personPort.getPersons().add(person);
+  private void addPerson(HashMap<Integer, SeaPort> ports, Person person) {
+    SeaPort port = ports.get(person.getParent());
+    port.getPersons().add(person);
   }
 
   private void addPort(SeaPort port) {
-    ports.add(port);
+    this.getPorts().add(port);
   }
 
-  private void addDock(SeaPort port, Dock dock) {
+  private void addDock(HashMap<Integer, SeaPort> ports, Dock dock) {
+    SeaPort port = ports.get(dock.getParent());
     port.getDocks().add(dock);
   }
 
-  private void addShip(SeaPort port, SeaPort dockPort, Dock dock, Ship ship) {
+  private void addShip(HashMap<Integer, SeaPort> ports, HashMap<Integer, Dock> docks, Ship ship) {
+    Dock dock = docks.get(ship.getParent());
+    SeaPort port;
+
     if (dock == null) {
-      port.getShips().add(ship);
+      port = ports.get(ship.getParent());
       port.getQue().add(ship);
-      return;
+    } else {
+      port = ports.get(dock.getParent());
+      dock.setShip(ship);
     }
-
-    dock.setShip(ship);
-    dockPort.getShips().add(ship);
-  }
-
-  // Get objects by index methods
-  private SeaPort getSeaPortByIndex(int index) {
-    for (SeaPort port : ports) {
-      if (port.getIndex() == index) {
-        return port;
-      }
-    }
-    return null;
-  }
-
-  private Dock getDockByIndex(int index) {
-    for (SeaPort port : ports) {
-      for (Dock dock : port.getDocks()) {
-        if (dock.getIndex() == index) {
-          return dock;
-        }
-      }
-    }
-    return null;
-  }
-
-  private Person getPersonByIndex(int index) {
-    for (SeaPort port : ports) {
-      for (Person person : port.getPersons()) {
-        if (person.getIndex() == index) {
-          return person;
-        }
-      }
-    }
-    return null;
+    port.getShips().add(ship);
   }
 
   // getters and setters

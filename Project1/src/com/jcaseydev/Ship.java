@@ -101,6 +101,10 @@ public class Ship extends Thing {
   // toString
   @Override
   public String toString() {
-    return super.toString();
+    return super.toString() +
+        " " + this.getWeight() +
+        " " + this.getLength() +
+        " " + this.getWidth() +
+        " " + this.getDraft();
   }
 }
