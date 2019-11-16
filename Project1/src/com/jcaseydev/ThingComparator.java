@@ -1,5 +1,12 @@
 package com.jcaseydev;
 
+/////////////////
+// File: ThingComparator.java
+// Date: 13 Nov 2019
+// Author: Justin Casey
+// Purpose: Comparator class for Things
+//
+
 import java.util.Comparator;
 
 public class ThingComparator implements Comparator<Thing> {

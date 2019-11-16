@@ -1,4 +1,10 @@
 package com.jcaseydev;
+/////////////////
+// File: ShipComparator.java
+// Date: 13 Nov 2019
+// Author: Justin Casey
+// Purpose: Comparator class for Ships
+//
 
 import java.util.Comparator;
 

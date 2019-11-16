@@ -43,7 +43,7 @@ public class SeaPortProgram extends JFrame {
   // constructor
   private SeaPortProgram() {
     final String[] searchItems = {"Index", "Skill", "Type", "Name"};
-    final String[] sortItems = {"Ports", "People", "Queue", "Ships", "Jobs", "Docks"};
+    final String[] sortItems = {"Ports", "People", "Ships", "Queue", "Jobs", "Docks"};
 
     final String[] seaPortSort = {"name"};
     final String[] docksSort = {"name"};
