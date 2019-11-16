@@ -13,7 +13,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.Scanner;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -44,7 +43,7 @@ public class SeaPortProgram extends JFrame {
   // constructor
   private SeaPortProgram() {
     final String[] searchItems = {"Index", "Skill", "Type", "Name"};
-    final String[] sortItems = {"Ports", "Ships", "Queue", "People", "Jobs", "Docks"};
+    final String[] sortItems = {"Ports", "People", "Queue", "Ships", "Jobs", "Docks"};
 
     final String[] seaPortSort = {"name"};
     final String[] docksSort = {"name"};
@@ -115,7 +114,6 @@ public class SeaPortProgram extends JFrame {
 
     sortComboBox.setEditable(false);
     sortComboBox.setPreferredSize(comboBoxDimen);
-    // Populates sortCombo
     for (String item : sortItems) {
       sortComboBox.addItem(item);
     }
@@ -123,7 +121,6 @@ public class SeaPortProgram extends JFrame {
 
     sortTypeComboBox.setEditable(false);
     sortTypeComboBox.setPreferredSize(comboBoxDimen);
-    // Populates sortParamCombo
     for (String item : sortTargets[0]) {
       sortTypeComboBox.addItem(item);
     }
@@ -131,7 +128,7 @@ public class SeaPortProgram extends JFrame {
     worldTextArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
     worldTextArea.setEditable(false);
 
-    searchTextArea.setFont(new Font ("Monospaced", Font.PLAIN, 12));
+    searchTextArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
     searchTextArea.setEditable(false);
 
     worldScroll.setPreferredSize(scrollPaneDimen);
@@ -255,20 +252,24 @@ public class SeaPortProgram extends JFrame {
         world.getPorts().sort(new ThingComparator(type));
         break;
       case "Docks":
-        for (SeaPort port : world.getPorts())
+        for (SeaPort port : world.getPorts()) {
           port.getDocks().sort(new ThingComparator(type));
+        }
         break;
       case "Ships":
-        for (SeaPort port : world.getPorts())
+        for (SeaPort port : world.getPorts()) {
           port.getShips().sort(new ShipComparator(type));
+        }
         break;
       case "Queue":
-        for (SeaPort port : world.getPorts())
+        for (SeaPort port : world.getPorts()) {
           port.getQue().sort(new ShipComparator(type));
+        }
         break;
       case "People":
-        for (SeaPort port : world.getPorts())
+        for (SeaPort port : world.getPorts()) {
           port.getPersons().sort(new ThingComparator(type));
+        }
         break;
       case "Jobs":
         // TODO: implement

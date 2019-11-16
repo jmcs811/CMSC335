@@ -3,6 +3,7 @@ package com.jcaseydev;
 import java.util.Comparator;
 
 public class ThingComparator implements Comparator<Thing> {
+
   private String target;
 
   ThingComparator(String target) {

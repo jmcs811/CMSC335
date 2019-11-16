@@ -57,7 +57,6 @@ public class World extends Thing {
         }
       }
     }
-
   }
 
   // methods to add the specified object to the
