@@ -17,8 +17,8 @@ public class Ship extends Thing {
   private SeaPort port;
   private Dock dock;
   private boolean isBusy = false;
-  private PortTime arrivalTime;
-  private PortTime dockTime;
+//  private PortTime arrivalTime;
+//  private PortTime dockTime;
   private double draft;
   private double length;
   private double weight;
@@ -48,76 +48,76 @@ public class Ship extends Thing {
 
     dock = dockMap.get(this.getParent());
     if (dock == null) {
-      portMap = portMap.get(this.getParent())
+      port = portMap.get(this.getParent());
     } else {
       port = portMap.get(dock.getParent());
     }
   }
 
   // getters and setters
-  public PortTime getArrivalTime() {
-    return arrivalTime;
-  }
+//  public PortTime getArrivalTime() {
+//    return arrivalTime;
+//  }
 
-  public void setArrivalTime(PortTime arrivalTime) {
-    this.arrivalTime = arrivalTime;
-  }
+//  public void setArrivalTime(PortTime arrivalTime) {
+//    this.arrivalTime = arrivalTime;
+//  }
 
-  public PortTime getDockTime() {
-    return dockTime;
-  }
+//  public PortTime getDockTime() {
+//    return dockTime;
+//  }
 
-  public void setDockTime(PortTime dockTime) {
-    this.dockTime = dockTime;
-  }
+//  public void setDockTime(PortTime dockTime) {
+//    this.dockTime = dockTime;
+//  }
 
-  public double getDraft() {
+  double getDraft() {
     return draft;
   }
 
-  public void setDraft(double draft) {
-    this.draft = draft;
-  }
+//  public void setDraft(double draft) {
+//    this.draft = draft;
+//  }
 
-  public double getLength() {
+  double getLength() {
     return length;
   }
 
-  public void setLength(double length) {
-    this.length = length;
-  }
+//  public void setLength(double length) {
+//    this.length = length;
+//  }
 
-  public double getWeight() {
+  double getWeight() {
     return weight;
   }
 
-  public void setWeight(double weight) {
-    this.weight = weight;
-  }
+//  public void setWeight(double weight) {
+//    this.weight = weight;
+//  }
 
-  public double getWidth() {
+  double getWidth() {
     return width;
   }
 
-  public void setWidth(double width) {
-    this.width = width;
-  }
+//  public void setWidth(double width) {
+//    this.width = width;
+//  }
 
-  public ArrayList<Job> getJobs() {
+  ArrayList<Job> getJobs() {
     return jobs;
   }
 
-  public void setJobs(ArrayList<Job> jobs) {
-    this.jobs = jobs;
-  }
+//  public void setJobs(ArrayList<Job> jobs) {
+//    this.jobs = jobs;
+//  }
 
-  public SeaPort getPort() {
+  SeaPort getPort() {
     return port;
   }
 
-  public void setPort(SeaPort port) {
-    this.port = port;
-  }
+//  public void setPort(SeaPort port) {
+//    this.port = port;
+//  }
 
   public Dock getDock() {
     return dock;
@@ -127,11 +127,11 @@ public class Ship extends Thing {
     this.dock = dock;
   }
 
-  public boolean isBusy() {
+  boolean isBusy() {
     return isBusy;
   }
 
-  public void setBusy(boolean busy) {
+  void setBusy(boolean busy) {
     isBusy = busy;
   }
 

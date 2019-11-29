@@ -3,16 +3,21 @@ package com.jcaseydev;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
+import javax.swing.JTable;
 
 public class World extends Thing {
 
   private ArrayList<SeaPort> ports;
   private PortTime time;
+  private SeaPortProgram program;
+  private JTable jobTable;
 
   // constructor
-  World(Scanner scanner) {
+  World(Scanner scanner, SeaPortProgram program, JTable jobTable) {
     super(scanner);
+    this.program = program;
     ports = new ArrayList<>();
+    this.jobTable = jobTable;
   }
 
   // method to read the line and create the
@@ -22,6 +27,7 @@ public class World extends Thing {
     HashMap<Integer, Dock> docks = new HashMap<>();
     HashMap<Integer, Ship> ships = new HashMap<>();
     HashMap<Integer, Person> persons = new HashMap<>();
+    HashMap<Integer, Job> jobs = new HashMap<>();
 
     while (file.hasNextLine()) {
       String line = file.nextLine().trim();
@@ -31,29 +37,27 @@ public class World extends Thing {
         switch (sc.next()) {
           case "port":
             SeaPort seaPort = new SeaPort(sc);
-            addPort(seaPort);
-            ports.put(seaPort.getIndex(), seaPort);
+            addPort(ports, seaPort);
             break;
           case "dock":
             Dock dock = new Dock(sc);
-            addDock(ports, dock);
-            docks.put(dock.getIndex(), dock);
+            addDock(ports, docks, dock);
             break;
           case "pship":
-            PassengerShip pShip = new PassengerShip(sc);
-            addShip(ports, docks, pShip);
-            ships.put(pShip.getIndex(), pShip);
+            PassengerShip pShip = new PassengerShip(sc, ports, docks);
+            addShip(ports, docks, ships, pShip);
             break;
           case "cship":
-            CargoShip cShip = new CargoShip(sc);
-            addShip(ports, docks, cShip);
-            ships.put(cShip.getIndex(), cShip);
+            CargoShip cShip = new CargoShip(sc, ports, docks);
+            addShip(ports, docks, ships, cShip);
             break;
           case "person":
             Person person = new Person(sc);
-            addPerson(ports, person);
-            persons.put(person.getIndex(), person);
+            addPerson(ports, persons, person);
             break;
+          case "job":
+            Job job = new Job(sc, program, ships, jobTable);
+            addJob(ships, jobs, job);
         }
       }
     }
@@ -61,21 +65,32 @@ public class World extends Thing {
 
   // methods to add the specified object to the
   // ArrayList of that object.
-  private void addPerson(HashMap<Integer, SeaPort> ports, Person person) {
+  private void addJob(HashMap<Integer, Ship> ships, HashMap<Integer, Job> jobs, Job job) {
+    Ship ship = ships.get(job.getParent());
+    ship.getJobs().add(job);
+    jobs.put(job.getIndex(), job);
+  }
+
+  private void addPerson(HashMap<Integer, SeaPort> ports, HashMap<Integer, Person> persons,
+      Person person) {
     SeaPort port = ports.get(person.getParent());
     port.getPersons().add(person);
+    persons.put(person.getIndex(), person);
   }
 
-  private void addPort(SeaPort port) {
+  private void addPort(HashMap<Integer, SeaPort> ports, SeaPort port) {
     this.getPorts().add(port);
+    ports.put(port.getIndex(), port);
   }
 
-  private void addDock(HashMap<Integer, SeaPort> ports, Dock dock) {
+  private void addDock(HashMap<Integer, SeaPort> ports, HashMap<Integer, Dock> docks, Dock dock) {
     SeaPort port = ports.get(dock.getParent());
     port.getDocks().add(dock);
+    docks.put(dock.getIndex(), dock);
   }
 
-  private void addShip(HashMap<Integer, SeaPort> ports, HashMap<Integer, Dock> docks, Ship ship) {
+  private void addShip(HashMap<Integer, SeaPort> ports, HashMap<Integer,
+      Dock> docks, HashMap<Integer, Ship> ships, Ship ship) {
     Dock dock = docks.get(ship.getParent());
     SeaPort port;
 
@@ -87,6 +102,7 @@ public class World extends Thing {
       dock.setShip(ship);
     }
     port.getShips().add(ship);
+    ships.put(ship.getIndex(), ship);
   }
 
   // getters and setters

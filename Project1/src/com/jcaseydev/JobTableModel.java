@@ -1,11 +1,13 @@
 package com.jcaseydev;
 
-import javax.swing.*;
+import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
 public class JobTableModel extends DefaultTableModel implements TableModel {
-  private static final String[] COLUMN_NAMES = {"Ship", "Name", "Status", "Progress", "Pause", "Cancel"};
+
+  private static final String[] COLUMN_NAMES = {"Ship", "Name", "Status", "Progress", "Pause",
+      "Cancel"};
 
   JobTableModel() {
     super(COLUMN_NAMES, 0);

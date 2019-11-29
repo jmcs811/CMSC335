@@ -18,7 +18,8 @@ public class PassengerShip extends Ship {
   private int numberOfRooms;
 
   // constructor
-  PassengerShip(Scanner scanner, HashMap<Integer, SeaPort> portMap, HashMap<Integer, Dock> dockMap) {
+  PassengerShip(Scanner scanner, HashMap<Integer, SeaPort> portMap,
+      HashMap<Integer, Dock> dockMap) {
     super(scanner, portMap, dockMap);
     if (scanner.hasNextInt()) {
       numberOfPassengers = scanner.nextInt();

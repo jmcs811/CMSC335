@@ -8,12 +8,17 @@ package com.jcaseydev;
 // object.
 //
 
-import javax.swing.*;
-import javax.swing.event.TableModelEvent;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.util.HashMap;
 import java.util.Scanner;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JTable;
+import javax.swing.event.TableModelEvent;
+import javax.swing.table.DefaultTableModel;
 
 public class Job extends Thing implements Runnable {
 
@@ -42,8 +47,9 @@ public class Job extends Thing implements Runnable {
   Job(Scanner scanner, SeaPortProgram program, HashMap<Integer, Ship> shipsMap, JTable jobTable) {
     super(scanner);
 
-    super(scanner);
-    if (scanner.hasNextDouble()) duration = scanner.nextDouble();
+    if (scanner.hasNextDouble()) {
+      duration = scanner.nextDouble();
+    }
 
     this.jobTable = jobTable;
     jobTableModel = (DefaultTableModel) jobTable.getModel();
@@ -67,7 +73,7 @@ public class Job extends Thing implements Runnable {
     cancelPanel.setBorder(null);
 
     statusLabel = new JLabel();
-    progressBar = new JProgressBar (0, 100000);
+    progressBar = new JProgressBar(0, 100000);
     JButton suspendBtn = new JButton("Pause");
     JButton cancelBtn = new JButton("Cancel");
 
@@ -103,7 +109,7 @@ public class Job extends Thing implements Runnable {
 
   private void setStatus(Status status) {
     this.status = status;
-    switch (status){
+    switch (status) {
       case RUNNING:
         statusPanel.setBackground(Color.GREEN);
         break;
@@ -156,22 +162,24 @@ public class Job extends Thing implements Runnable {
     synchronized (port) {
       while (ship.isBusy() || ship.getDock() == null) {
         setStatus(Status.WAITING);
-        try{
+        try {
           port.wait();
-        } catch (InterruptedException ignored) {}
+        } catch (InterruptedException ignored) {
+        }
       }
-      ship.isBusy(true);
+      ship.setBusy(true);
     }
 
     while (startTime < stopTime && !isCanceled) {
       try {
-        Thread.sleep (100);
-      } catch (InterruptedException ignored) {}
+        Thread.sleep(100);
+      } catch (InterruptedException ignored) {
+      }
 
       if (isRunning) {
         setStatus(Status.RUNNING);
         startTime += 100;
-        progressBar.setValue((int)(((startTime - currentTime) / duration) * 100));
+        progressBar.setValue((int) (((startTime - currentTime) / duration) * 100));
       } else {
         setStatus(Status.SUSPENDED);
       }
@@ -187,17 +195,21 @@ public class Job extends Thing implements Runnable {
           port.notifyAll();
           return;
         }
-        while (!port.getQueue().isEmpty()) {
-          Ship newShip = port.getQueue().remove(0);
-          if (!newShip.getJobs().isEmpty()) {
-            program.updateLog("Ship " + ship.getName() + " Departed from " + ship.getDock().getName());
-            Dock dock = ship.getDock();
-            dock.setShip(newShip);
-            newShip.setDock(dock);
-            program.updateLog("Ship " + newShip.getName() + " Arrived at " + dock.getName());
-            port.notifyAll();
-            return;
-          }
+      }
+      while (!port.getQue().isEmpty()) {
+        Ship newShip = port.getQue().remove(0);
+        if (!newShip.getJobs().isEmpty()) {
+          program.updateLog(
+              "Ship " + ship.getName() +
+                  " Departed from " + ship.getDock().getName());
+          Dock dock = ship.getDock();
+          dock.setShip(newShip);
+          newShip.setDock(dock);
+          program.updateLog(
+              "Ship " + newShip.getName() +
+                  " Arrived at " + dock.getName());
+          port.notifyAll();
+          return;
         }
       }
     }
