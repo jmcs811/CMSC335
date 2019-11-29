@@ -9,10 +9,14 @@ package com.jcaseydev;
 //
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class Ship extends Thing {
 
+  private SeaPort port;
+  private Dock dock;
+  private boolean isBusy = false;
   private PortTime arrivalTime;
   private PortTime dockTime;
   private double draft;
@@ -22,7 +26,7 @@ public class Ship extends Thing {
   private ArrayList<Job> jobs;
 
   // constructor
-  Ship(Scanner scanner) {
+  Ship(Scanner scanner, HashMap<Integer, SeaPort> portMap, HashMap<Integer, Dock> dockMap) {
     super(scanner);
     if (scanner.hasNextDouble()) {
       weight = scanner.nextDouble();
@@ -38,6 +42,15 @@ public class Ship extends Thing {
 
     if (scanner.hasNextDouble()) {
       draft = scanner.nextDouble();
+    }
+
+    jobs = new ArrayList<>();
+
+    dock = dockMap.get(this.getParent());
+    if (dock == null) {
+      portMap = portMap.get(this.getParent())
+    } else {
+      port = portMap.get(dock.getParent());
     }
   }
 
@@ -96,6 +109,30 @@ public class Ship extends Thing {
 
   public void setJobs(ArrayList<Job> jobs) {
     this.jobs = jobs;
+  }
+
+  public SeaPort getPort() {
+    return port;
+  }
+
+  public void setPort(SeaPort port) {
+    this.port = port;
+  }
+
+  public Dock getDock() {
+    return dock;
+  }
+
+  public void setDock(Dock dock) {
+    this.dock = dock;
+  }
+
+  public boolean isBusy() {
+    return isBusy;
+  }
+
+  public void setBusy(boolean busy) {
+    isBusy = busy;
   }
 
   // toString

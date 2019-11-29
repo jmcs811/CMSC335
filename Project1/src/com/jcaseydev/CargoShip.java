@@ -8,6 +8,7 @@ package com.jcaseydev;
 // ship object.
 //
 
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class CargoShip extends Ship {
@@ -17,8 +18,8 @@ public class CargoShip extends Ship {
   private double cargoWeight;
 
   // constructor
-  CargoShip(Scanner scanner) {
-    super(scanner);
+  CargoShip(Scanner scanner, HashMap<Integer, SeaPort> portMap, HashMap<Integer, Dock> dockMap) {
+    super(scanner, portMap, dockMap);
     if (scanner.hasNextDouble()) {
       cargoWeight = scanner.nextDouble();
     }

@@ -8,6 +8,7 @@ package com.jcaseydev;
 // ship object.
 //
 
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class PassengerShip extends Ship {
@@ -17,8 +18,8 @@ public class PassengerShip extends Ship {
   private int numberOfRooms;
 
   // constructor
-  PassengerShip(Scanner scanner) {
-    super(scanner);
+  PassengerShip(Scanner scanner, HashMap<Integer, SeaPort> portMap, HashMap<Integer, Dock> dockMap) {
+    super(scanner, portMap, dockMap);
     if (scanner.hasNextInt()) {
       numberOfPassengers = scanner.nextInt();
     }
