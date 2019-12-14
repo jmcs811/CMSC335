@@ -34,7 +34,7 @@ port Vainikkala 10001 0
 
 // pship  name index parent(dock/port) weight length width draft numPassengers numRooms numOccupied
 //    pship  <string> <int> <int> <double> <double> <double> <double> <int> <int> <int>
-//    pship      "ZZZ_Hysterics" 30002 20002 103.71 327.92 56.43 30.23 3212 917 917
+    pship      "ZZZ_Hysterics" 30002 20002 103.71 327.92 56.43 30.23 3212 917 917
     pship             Tieclasp 30012 20014 110.03 256.90 32.12 27.33 1951 1010 975
     pship                Glory 30000 20000 137.28 399.53 128.71 39.37 1059 670 529
     pship              Bittern 30007 20007 86.97 124.82 122.03 15.32 378 256 189

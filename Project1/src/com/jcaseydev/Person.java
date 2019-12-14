@@ -8,11 +8,21 @@ package com.jcaseydev;
 // object.
 //
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.util.Scanner;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 public class Person extends Thing {
 
   private String skill;
+  private String loc;
+  private WorkerStatus status;
+
+  // panels
+  private JPanel statusPanel;
+  private JLabel statusLabel;
 
   // constructor
   Person(Scanner scanner) {
@@ -20,6 +30,21 @@ public class Person extends Thing {
     if (scanner.hasNext()) {
       skill = scanner.next();
     }
+    initGUI();
+  }
+
+  private void initGUI() {
+    statusPanel = new JPanel(new BorderLayout());
+
+    statusPanel.setBorder(null);
+    statusLabel = new JLabel();
+    statusLabel.setBorder(null);
+
+    statusLabel.setForeground(Color.BLACK);
+    statusLabel.setHorizontalAlignment(JLabel.CENTER);
+    setStatus(WorkerStatus.AVAILABLE);
+
+    statusPanel.add(statusLabel, BorderLayout.CENTER);
   }
 
   // getters and setters
@@ -29,6 +54,26 @@ public class Person extends Thing {
 
   public void setSkill(String skill) {
     this.skill = skill;
+  }
+
+  public String getLoc() {
+    return loc;
+  }
+
+  public void setLoc(String loc) {
+    this.loc = loc;
+  }
+
+  public WorkerStatus getStatus() {
+    return status;
+  }
+
+  public void setStatus(WorkerStatus status) {
+    this.status = status;
+  }
+
+  JPanel getStatusPanel() {
+    return statusPanel;
   }
 
   // toString

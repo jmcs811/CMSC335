@@ -17,6 +17,7 @@ public class SeaPort extends Thing {
   private ArrayList<Ship> que;
   private ArrayList<Ship> ships;
   private ArrayList<Person> persons;
+  private ArrayList<Person> resourcePool;
 
   // constructor
   SeaPort(Scanner scanner) {
@@ -25,6 +26,7 @@ public class SeaPort extends Thing {
     que = new ArrayList<>();
     ships = new ArrayList<>();
     persons = new ArrayList<>();
+    resourcePool = new ArrayList<>();
   }
 
   // getters and setters
@@ -58,6 +60,14 @@ public class SeaPort extends Thing {
 
   public void setPersons(ArrayList<Person> persons) {
     this.persons = persons;
+  }
+
+  public ArrayList<Person> getResourcePool() {
+    return resourcePool;
+  }
+
+  public void setResourcePool(ArrayList<Person> resourcePool) {
+    this.resourcePool = resourcePool;
   }
 
   // to string method

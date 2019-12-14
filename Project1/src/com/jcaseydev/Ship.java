@@ -17,13 +17,12 @@ public class Ship extends Thing {
   private SeaPort port;
   private Dock dock;
   private boolean isBusy = false;
-//  private PortTime arrivalTime;
-//  private PortTime dockTime;
   private double draft;
   private double length;
   private double weight;
   private double width;
   private ArrayList<Job> jobs;
+  private ArrayList<Person> workers;
 
   // constructor
   Ship(Scanner scanner, HashMap<Integer, SeaPort> portMap, HashMap<Integer, Dock> dockMap) {
@@ -54,70 +53,33 @@ public class Ship extends Thing {
     }
   }
 
-  // getters and setters
-//  public PortTime getArrivalTime() {
-//    return arrivalTime;
-//  }
-
-//  public void setArrivalTime(PortTime arrivalTime) {
-//    this.arrivalTime = arrivalTime;
-//  }
-
-//  public PortTime getDockTime() {
-//    return dockTime;
-//  }
-
-//  public void setDockTime(PortTime dockTime) {
-//    this.dockTime = dockTime;
-//  }
-
   double getDraft() {
     return draft;
   }
 
-//  public void setDraft(double draft) {
-//    this.draft = draft;
-//  }
 
   double getLength() {
     return length;
   }
 
-//  public void setLength(double length) {
-//    this.length = length;
-//  }
 
   double getWeight() {
     return weight;
   }
 
-//  public void setWeight(double weight) {
-//    this.weight = weight;
-//  }
 
   double getWidth() {
     return width;
   }
 
-//  public void setWidth(double width) {
-//    this.width = width;
-//  }
 
   ArrayList<Job> getJobs() {
     return jobs;
   }
 
-//  public void setJobs(ArrayList<Job> jobs) {
-//    this.jobs = jobs;
-//  }
-
   SeaPort getPort() {
     return port;
   }
-
-//  public void setPort(SeaPort port) {
-//    this.port = port;
-//  }
 
   public Dock getDock() {
     return dock;
@@ -133,6 +95,14 @@ public class Ship extends Thing {
 
   void setBusy(boolean busy) {
     isBusy = busy;
+  }
+
+  ArrayList<Person> getWorkers() {
+    return workers;
+  }
+
+  void setWorkers(ArrayList<Person> workers) {
+    this.workers = workers;
   }
 
   // toString

@@ -45,44 +45,35 @@ public class SeaPortProgram extends JFrame {
 
   private World world;
 
-  private enum ErrorType {NO_FILE, NO_WORLD, MISSING_SEARCH_PARAM}
-
   // GUI Variables
   private JComboBox<String> searchCombo, sortCombo, sortTargetCombo;
   private JTextField searchField;
   private JTree worldTree;
   private JTextArea searchTextArea, logTextArea;
-  private JTable jobsTable;
+  private JTable jobsTable, resourcesTable;
 
   private SeaPortProgram() {
 
     // Combo Items
-    final String[] searchItems = {"Index", "Name", "Skill", "Type"};
-    final String[] sortItems = {"Ports", "Docks", "Ships", "Queue", "People", "Jobs"};
+    final String[] searchComboItems = {"Index", "Name", "Skill", "Type"};
+    final String[] sortComboItems = {"Ports", "Docks", "Ships", "Queue", "People", "Jobs"};
 
-    // Sort Targets For Each sortItems
-    final String[] seaPortSort = {"name"};
-    final String[] docksSort = {"name"};
-    final String[] allShipsSort = {"name"};
-    final String[] queuedShipsSort = {"name", "weight", "length", "width", "draft"};
-    final String[] peopleSort = {"name"};
-    final String[] jobsSort = {"name"};
+    // Sort Targets For Each sortComboItems
+    final String[] seaPortSortTargets = {"name"};
+    final String[] docksSortTargets = {"name"};
+    final String[] allShipsSortTargets = {"name"};
+    final String[] queuedShipsSortTargets = {"name", "weight", "length", "width", "draft"};
+    final String[] peopleSortTargets = {"name"};
+    final String[] jobsSortTargets = {"name"};
 
     // All Sort Targets
     final String[][] sortTargets = {
-        seaPortSort,
-        docksSort,
-        allShipsSort,
-        queuedShipsSort,
-        peopleSort,
-        jobsSort
+        seaPortSortTargets, docksSortTargets, allShipsSortTargets,
+        queuedShipsSortTargets, peopleSortTargets, jobsSortTargets
     };
 
-    // JTable Header Titles
-    final String[] resourcesTableTitles = {"This", "Is", "A", "Placeholder", "", ""};
-
     // Preset Dimensions
-    final Dimension frameDimension = new Dimension(1150, 630);
+    final Dimension frameDimension = new Dimension(1125, 619);
 
     // Preset Fonts
     Font monospaced = new Font("Monospaced", Font.PLAIN, 12);
@@ -103,15 +94,16 @@ public class SeaPortProgram extends JFrame {
     c.gridwidth = 1;
 
     // Create JPanels
-    JPanel optionsPanel = new JPanel();
-    JPanel filePanel = new JPanel();
-    JPanel searchPanel = new JPanel();
-    JPanel sortPanel = new JPanel();
-    JPanel viewPanel = new JPanel();
-    JPanel treePanel = new JPanel();
-    JPanel treeOptPanel = new JPanel();
-    JPanel logPanel = new JPanel();
+    JPanel optionsPanel = new JPanel();                     // UPPER UI - super Panel
+    JPanel filePanel = new JPanel();                        // UPPER UI - File Options
+    JPanel searchPanel = new JPanel();                      // UPPER UI - Search Options
+    JPanel sortPanel = new JPanel();                        // UPPER UI - Sort Options
+    JPanel viewPanel = new JPanel();                        // MAIN UI - super Panel
+    JPanel treePanel = new JPanel();                        // MAIN UI - Tree View
+    JPanel treeOptPanel = new JPanel();                     // MAIN UI - Tree View Options
+    JPanel logPanel = new JPanel();                         // MAIN UI - Log/Job View
 
+    // region UPPER UI Construction
     // Set Layouts
     optionsPanel.setLayout(new GridBagLayout());
     filePanel.setLayout(new GridBagLayout());
@@ -124,29 +116,29 @@ public class SeaPortProgram extends JFrame {
     sortPanel.setBorder(new TitledBorder("Sort"));
 
     // Create Components
-    JButton readBtn = new JButton("Read");
-    JButton displayBtn = new JButton("Display");
-    JButton clearBtn = new JButton("Clear");
-    searchField = new JTextField();
-    searchCombo = new JComboBox<>();
-    JButton searchBtn = new JButton("Search");
-    sortTargetCombo = new JComboBox<>();
-    sortCombo = new JComboBox<>();
-    JButton sortBtn = new JButton("Sort");
+    JButton readBtn = new JButton("Read");             // File Options - Read Button
+    JButton displayBtn = new JButton("Display");       // File Options - Display Button
+    JButton clearBtn = new JButton("Clear");           // File Options - Clear Button
+    searchField = new JTextField();                        // Search Options - Search Field
+    searchCombo = new JComboBox<>();                        // Search Options - Search Combo
+    JButton searchBtn = new JButton("Search");         // Search Options - Search Button
+    sortTargetCombo = new JComboBox<>();                    // Sort Options - Sort Target (Thing) Combo
+    sortCombo = new JComboBox<>();                          // Sort Options - Sort Combo
+    JButton sortBtn = new JButton("Sort");             // Sort Options - Sort Button
 
     // Set Fonts
     searchField.setFont(monospaced);
 
     // searchCombo Settings
     searchCombo.setEditable(false);
-    for (String item : searchItems) {
+    for (String item : searchComboItems) {
       searchCombo.addItem(item);
     }
     searchCombo.setSelectedIndex(0);
 
     // sortCombo Settings
     sortCombo.setEditable(false);
-    for (String item : sortItems) {
+    for (String item : sortComboItems) {
       sortCombo.addItem(item);
     }
     sortCombo.setSelectedIndex(0);
@@ -213,7 +205,7 @@ public class SeaPortProgram extends JFrame {
 
     // Set Table Models
     DefaultTableModel jobsTableModel = new JobTableModel();
-    DefaultTableModel resourcesTableModel = new DefaultTableModel(resourcesTableTitles, 0);
+    DefaultTableModel resourcesTableModel = new ResourcesTable();
 
     // Create Components
     worldTree = new JTree(new DefaultMutableTreeNode("SeaPorts"));
@@ -225,30 +217,34 @@ public class SeaPortProgram extends JFrame {
     searchTextArea = new JTextArea();
     jobsTable = new JTable(
         jobsTableModel);
-    JTable resourcesTable = new JTable(
+    resourcesTable = new JTable(
         resourcesTableModel);
 
     // Create Scroll Panes
-    JScrollPane treeScrollPane = new JScrollPane(worldTree);
-    JScrollPane logScrollPane = new JScrollPane(logTextArea);
-    JScrollPane searchScrollPane = new JScrollPane(searchTextArea);
-    JScrollPane jobsScrollPane = new JScrollPane(jobsTable);
-    JScrollPane resourcesScrollPane = new JScrollPane(resourcesTable);
+    JScrollPane treeScrollPane = new JScrollPane(
+        worldTree);
+    JScrollPane logScrollPane = new JScrollPane(
+        logTextArea);
+    JScrollPane searchScrollPane = new JScrollPane(
+        searchTextArea);
+    JScrollPane jobsScrollPane = new JScrollPane(
+        jobsTable);
+    JScrollPane resourcesScrollPane = new JScrollPane(
+        resourcesTable);
 
     // Create JTabbed Panes
     JTabbedPane logsTabbedPane = new JTabbedPane();
     logsTabbedPane.add("Log", logScrollPane);
-    logsTabbedPane.add("Search Results", searchScrollPane);
+    logsTabbedPane
+        .add("Search Results", searchScrollPane);
     JTabbedPane tablesTabbedPane = new JTabbedPane();
     tablesTabbedPane.add("Jobs", jobsScrollPane);
-    tablesTabbedPane.add("Resources", resourcesScrollPane);
+    tablesTabbedPane
+        .add("Resources", resourcesScrollPane);
 
     // Create JSplit Panes
-    JSplitPane logsSplitPane = new JSplitPane(
-        JSplitPane.VERTICAL_SPLIT,
-        logsTabbedPane,
-        tablesTabbedPane
-    );
+    JSplitPane logsSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, logsTabbedPane,
+        tablesTabbedPane);
     JSplitPane mainUISplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treePanel, logPanel);
 
     // Create Carets
@@ -278,6 +274,12 @@ public class SeaPortProgram extends JFrame {
     jobsTable.setDefaultEditor(Component.class, new PanelCellEditor());
     jobsTable.getTableHeader().setReorderingAllowed(false);
     jobsTable.setRowHeight(25);
+
+    // jobsTable Settings
+    resourcesTable.setDefaultRenderer(Component.class, new PanelCellRenderer());
+    resourcesTable.setDefaultEditor(Component.class, new PanelCellEditor());
+    resourcesTable.getTableHeader().setReorderingAllowed(false);
+    resourcesTable.setRowHeight(25);
 
     // JSplit Pane Settings
     logsSplitPane.setResizeWeight(0.5);
@@ -355,7 +357,7 @@ public class SeaPortProgram extends JFrame {
 
     updateLog("Read File Success");
 
-    world = new World(sc, this, jobsTable);
+    world = new World(sc, this);
     world.createObjects(sc);
     updateLog("World Process Success");
 
@@ -367,15 +369,16 @@ public class SeaPortProgram extends JFrame {
   private void startAllJobs() {
     for (SeaPort port : world.getPorts()) {
       for (Dock dock : port.getDocks()) {
-        if (dock.getShip().getJobs().isEmpty()) {
-          updateLog("Ship " + dock.getShip().getName() + " Departed from " + dock.getName());
+        Ship ship = dock.getShip();
+        if (ship != null && ship.getJobs().isEmpty()) {
+          updateLog(JobMessage.DEPARTED, dock.getName(), ship.getName());
           dock.setShip(null);
           while (!port.getQue().isEmpty()) {
-            Ship ship = port.getQue().remove(0);
-            if (!ship.getJobs().isEmpty()) {
-              dock.setShip(ship);
-              ship.setDock(dock);
-              updateLog("Ship " + ship.getName() + " Arrived at " + dock.getName());
+            Ship newShip = port.getQue().remove(0);
+            if (!newShip.getJobs().isEmpty()) {
+              dock.setShip(newShip);
+              newShip.setDock(dock);
+              updateLog(JobMessage.ARRIVED, dock.getName(), newShip.getName());
               break;
             }
           }
@@ -383,7 +386,7 @@ public class SeaPortProgram extends JFrame {
       }
       for (Ship ship : port.getShips()) {
         for (Job job : ship.getJobs()) {
-          job.startJob();
+          job.getThread().start();
         }
       }
     }
@@ -398,6 +401,7 @@ public class SeaPortProgram extends JFrame {
 
     updateWorldDisplay();
     updateJobDisplay();
+    updateResourceDisplay();
 
     updateLog("Display Update Success");
 
@@ -483,9 +487,24 @@ public class SeaPortProgram extends JFrame {
     for (SeaPort port : world.getPorts()) {
       for (Ship ship : port.getShips()) {
         for (Job job : ship.getJobs()) {
-          jobsTableModel.addRow(new Object[]{ship.getName(), job.getName(), job.getStatusPanel(),
-              job.getProgressPanel(), job.getSuspendPanel(), job.getCancelPanel()});
+          Object[] row = new Object[]{ship.getPort().getName(), ship.getName(), job.getName(),
+              job.getStatusPanel(), job.getProgressPanel(), job.getSuspendPanel(),
+              job.getCancelPanel()};
+          jobsTableModel.addRow(row);
         }
+      }
+    }
+  }
+
+  synchronized void updateResourceDisplay() {
+    DefaultTableModel resourcesTableModel = (DefaultTableModel) resourcesTable.getModel();
+    resourcesTableModel.setRowCount(0);
+
+    for (SeaPort port : world.getPorts()) {
+      for (Person person : port.getPersons()) {
+        Object[] row = new Object[]{port.getName(), person.getName(), person.getSkill(),
+            person.getStatusPanel(), person.getLoc()};
+        resourcesTableModel.addRow(row);
       }
     }
   }
@@ -494,11 +513,13 @@ public class SeaPortProgram extends JFrame {
     logTextArea.setText("");
     searchTextArea.setText("");
     updateJobDisplay();
+    updateResourceDisplay();
   }
 
   private void search() {
     String comboSelectedItem = String.valueOf(searchCombo.getSelectedItem());
     String fieldText = searchField.getText();
+    ArrayList<Thing> results = new ArrayList<>();
 
     if (world == null) {
       displayError(ErrorType.NO_WORLD);
@@ -512,32 +533,25 @@ public class SeaPortProgram extends JFrame {
       return;
     }
 
-    searchType(comboSelectedItem, fieldText);
-  }
-
-  private void searchType(String type, String target) {
-
-    ArrayList<Thing> results = new ArrayList<>();
-
-    switch (type) {
+    switch (comboSelectedItem) {
       case "Index":
-        results = world.indexSearch(results, Integer.parseInt(target));
+        results = world.indexSearch(results, Integer.parseInt(fieldText));
         break;
       case "Name":
-        results = world.nameSearch(results, target);
+        results = world.nameSearch(results, fieldText);
         break;
       case "Skill":
-        results = world.skillSearch(results, target);
+        results = world.skillSearch(results, fieldText);
         break;
       case "Type":
-        results = world.typeSearch(results, target);
+        results = world.typeSearch(results, fieldText);
         break;
     }
 
-    updateLog("World Search - Type: " + type);
-    updateLog("World Search - Target: " + target);
+    updateLog("World Search - Type: " + comboSelectedItem);
+    updateLog("World Search - Target: " + fieldText);
 
-    searchTextArea.append(searchResultsToString(results, type + " - " + target));
+    searchTextArea.append(searchResultsToString(results, comboSelectedItem + " - " + fieldText));
   }
 
   private String searchResultsToString(ArrayList<Thing> results, String params) {
@@ -649,10 +663,43 @@ public class SeaPortProgram extends JFrame {
     JOptionPane.showMessageDialog(this, msg, "Error", JOptionPane.ERROR_MESSAGE);
   }
 
-  void updateLog(String logMessage) {
+  private synchronized void updateLog(String logMessage) {
     String currentTime = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss:SSS")
         .format(new Date().getTime());
     logTextArea.append(currentTime + " | " + logMessage + "\n");
+  }
+
+  synchronized void updateLog(JobMessage type, String current, String shipName) {
+    String msg = null;
+    switch (type) {
+      case STARTED:
+        msg = current + " has STARTED.\t\t - Ship " + shipName;
+        break;
+      case FINISHED:
+        msg = current + " has FINISHED.\t\t - Ship " + shipName;
+        break;
+      case CANCELED:
+        msg = current + " has been CANCELED.\t - Ship " + shipName;
+        break;
+      case ARRIVED:
+        msg = "ARRIVED at " + current + ".\t\t\t - Ship " + shipName;
+        break;
+      case DEPARTED:
+        msg = "DEPARTED " + current + ".\t\t\t - Ship " + shipName;
+        break;
+      case RESOURCES_REQUIRED:
+        msg = "RESOURCE NOT AVAILABLE: " + current;
+        if (current.length() < 5) {
+          msg = msg + "\t\t - Ship " + shipName;
+        } else {
+          msg = msg + "\t - Ship " + shipName;
+        }
+    }
+    updateLog(msg);
+  }
+
+  JTable getJobsTable() {
+    return jobsTable;
   }
 
   public static void main(String[] args) {

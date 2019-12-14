@@ -6,10 +6,10 @@ package com.jcaseydev;
 // Author: Justin Casey
 // Purpose: Class defining the Job
 // object.
-//
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 import javax.swing.JButton;
@@ -20,80 +20,96 @@ import javax.swing.JTable;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 
-public class Job extends Thing implements Runnable {
+class Job extends Thing implements Runnable {
 
   private final SeaPort port;
   private Ship ship;
-  private JTable jobTable;
-  private DefaultTableModel jobTableModel;
+  private JTable jobsTable;
+  private DefaultTableModel jobsTableModel;
 
-  private enum Status {RUNNING, SUSPENDED, WAITING, DONE, CANCELLED}
-
-  private Status status = Status.SUSPENDED;
+  private ArrayList<String> requirements = new ArrayList<>();
+  private JobStatus status = JobStatus.SUSPENDED;
   private boolean isRunning = true;
   private boolean isCanceled = false;
   private boolean isFinished = false;
   private double duration;
   private Thread thread;
 
+  // GUI Variables
   private SeaPortProgram program;
+
+  // Create JPanels
   private JPanel statusPanel;
   private JPanel progressPanel;
   private JPanel suspendPanel;
   private JPanel cancelPanel;
   private JLabel statusLabel;
+
   private JProgressBar progressBar;
 
-  Job(Scanner scanner, SeaPortProgram program, HashMap<Integer, Ship> shipsMap, JTable jobTable) {
-    super(scanner);
+  Job(Scanner sc, SeaPortProgram program, HashMap<Integer, Ship> shipsHashMap) {
 
-    if (scanner.hasNextDouble()) {
-      duration = scanner.nextDouble();
+    super(sc);
+    if (sc.hasNextDouble()) {
+      duration = sc.nextDouble();
+    }
+    while (sc.hasNext()) {
+      requirements.add(sc.next());
     }
 
-    this.jobTable = jobTable;
-    jobTableModel = (DefaultTableModel) jobTable.getModel();
-
     this.program = program;
+    jobsTable = program.getJobsTable();
+    jobsTableModel = (DefaultTableModel) jobsTable.getModel();
 
-    ship = shipsMap.get(this.getParent());
+    ship = shipsHashMap.get(this.getParent());
     port = ship.getPort();
 
     thread = new Thread(this, ship.getName() + "-" + this.getName());
 
-    //region Job GUI
+    buildGUI();
+  }
+
+  private void buildGUI() {
+
+    // Create JPanels
     statusPanel = new JPanel(new BorderLayout());
     progressPanel = new JPanel(new BorderLayout());
     suspendPanel = new JPanel(new BorderLayout());
     cancelPanel = new JPanel(new BorderLayout());
 
+    // Set Panel Borders
     statusPanel.setBorder(null);
     progressPanel.setBorder(null);
     suspendPanel.setBorder(null);
     cancelPanel.setBorder(null);
 
+    // Create Components
     statusLabel = new JLabel();
     progressBar = new JProgressBar(0, 100000);
     JButton suspendBtn = new JButton("Pause");
     JButton cancelBtn = new JButton("Cancel");
 
+    // Set Component Borders
     statusLabel.setBorder(null);
     progressBar.setBorder(null);
     suspendBtn.setBorder(null);
     cancelBtn.setBorder(null);
 
+    // statusLabel Settings
     statusLabel.setForeground(Color.BLACK);
     statusLabel.setHorizontalAlignment(JLabel.CENTER);
     setStatus(status);
 
+    // progressBar Settings
     progressBar.setStringPainted(true);
 
+    // Add Components
     statusPanel.add(statusLabel, BorderLayout.CENTER);
     progressPanel.add(progressBar, BorderLayout.CENTER);
     suspendPanel.add(suspendBtn, BorderLayout.CENTER);
     cancelPanel.add(cancelBtn, BorderLayout.CENTER);
-    //endregion
 
+    // Action Listeners
     suspendBtn.addActionListener(e -> toggleIsRunning());
     cancelBtn.addActionListener(e -> cancelJob());
   }
@@ -107,7 +123,7 @@ public class Job extends Thing implements Runnable {
     isRunning = false;
   }
 
-  private void setStatus(Status status) {
+  private void setStatus(JobStatus status) {
     this.status = status;
     switch (status) {
       case RUNNING:
@@ -121,12 +137,12 @@ public class Job extends Thing implements Runnable {
         break;
       case DONE:
         statusPanel.setBackground(Color.RED);
-        program.updateLog(this.getName() + " has Finished");
+        program.updateLog(JobMessage.FINISHED, this.getName(), ship.getName());
         isFinished = true;
         break;
-      case CANCELLED:
+      case CANCELED:
         statusPanel.setBackground(Color.RED);
-        program.updateLog(this.getName() + " has been Cancelled");
+        program.updateLog(JobMessage.CANCELED, this.getName(), ship.getName());
         isFinished = true;
         break;
     }
@@ -149,8 +165,8 @@ public class Job extends Thing implements Runnable {
     return cancelPanel;
   }
 
-  void startJob() {
-    thread.start();
+  Thread getThread() {
+    return thread;
   }
 
   @Override
@@ -160,15 +176,19 @@ public class Job extends Thing implements Runnable {
     long stopTime = (long) (startTime + duration * 1000);
 
     synchronized (port) {
-      while (ship.isBusy() || ship.getDock() == null) {
-        setStatus(Status.WAITING);
+      canRun();
+      while (isWaiting()) {
+        setStatus(JobStatus.WAITING);
         try {
           port.wait();
         } catch (InterruptedException ignored) {
         }
       }
+      program.updateResourceDisplay();
       ship.setBusy(true);
     }
+
+    program.updateLog(JobMessage.STARTED, this.getName(), ship.getName());
 
     while (startTime < stopTime && !isCanceled) {
       try {
@@ -177,18 +197,27 @@ public class Job extends Thing implements Runnable {
       }
 
       if (isRunning) {
-        setStatus(Status.RUNNING);
+        setStatus(JobStatus.RUNNING);
         startTime += 100;
         progressBar.setValue((int) (((startTime - currentTime) / duration) * 100));
       } else {
-        setStatus(Status.SUSPENDED);
+        setStatus(JobStatus.SUSPENDED);
       }
-      jobTable.tableChanged(new TableModelEvent(jobTableModel));
+      jobsTable.tableChanged(new TableModelEvent(jobsTableModel));
     }
 
-    endJob();
+    if (isCanceled && status != JobStatus.DONE) {
+      setStatus(JobStatus.CANCELED);
+    } else {
+      setStatus(JobStatus.DONE);
+    }
+
+    isFinished = true;
+    jobsTable.tableChanged(new TableModelEvent(jobsTableModel));
 
     synchronized (port) {
+      deallocateWorkers();
+      program.updateResourceDisplay();
       ship.setBusy(false);
       for (Job jobs : ship.getJobs()) {
         if (!(jobs.isFinished)) {
@@ -196,34 +225,104 @@ public class Job extends Thing implements Runnable {
           return;
         }
       }
-      while (!port.getQue().isEmpty()) {
-        Ship newShip = port.getQue().remove(0);
-        if (!newShip.getJobs().isEmpty()) {
-          program.updateLog(
-              "Ship " + ship.getName() +
-                  " Departed from " + ship.getDock().getName());
-          Dock dock = ship.getDock();
+
+      Dock dock = ship.getDock();
+
+      if (dock != null) {
+        program.updateLog(JobMessage.DEPARTED, dock.getName(), ship.getName());
+        dock.setShip(null);
+
+        if (!port.getQue().isEmpty()) {
+          Ship newShip = port.getQue().remove(0);
           dock.setShip(newShip);
           newShip.setDock(dock);
-          program.updateLog(
-              "Ship " + newShip.getName() +
-                  " Arrived at " + dock.getName());
-          port.notifyAll();
-          return;
+          program.updateLog(JobMessage.ARRIVED, dock.getName(), newShip.getName());
         }
+      } else {
+        program.updateLog(JobMessage.DEPARTED, ship.getPort().getName(), ship.getName());
+      }
+
+      port.notifyAll();
+    }
+  }
+
+
+  private void canRun() {
+    boolean canRun = hasRequiredWorkers(port.getPersons());
+    if (!canRun) {
+      cancelJob();
+    }
+  }
+
+  private synchronized boolean isWaiting() {
+    if (!isRunning) {
+      return false;
+    }
+
+    if (ship.isBusy() || ship.getDock() == null) {
+      return true;
+    } else {
+      if (!requirements.isEmpty()) {
+        // if Job has requirements, Job should NOT wait if workers CAN BE allocated
+        boolean canAllocate = hasRequiredWorkers(port.getResourcePool());
+        if (canAllocate) {
+          allocateWorkers();
+          notifyAll();
+        }
+        return !canAllocate;
+      } else {
+        return false;
       }
     }
   }
 
-  private void endJob() {
-    if (isCanceled && status != Status.DONE) {
-      setStatus(Status.CANCELLED);
-    } else {
-      setStatus(Status.DONE);
+  private boolean hasRequiredWorkers(ArrayList<Person> workers) {
+    ArrayList<Integer> indexes = new ArrayList<>();
+    for (String requirement : requirements) {
+      boolean workerFound = false;
+      for (Person person : workers) {
+        if (person.getSkill().equals(requirement) && !indexes.contains(person.getIndex())) {
+          workerFound = true;
+          indexes.add(person.getIndex());
+          break;
+        }
+      }
+      if (!workerFound) {
+        program.updateLog(JobMessage.RESOURCES_REQUIRED, requirement, ship.getName());
+        return false;
+      }
     }
-    isFinished = true;
+    return true;
   }
 
+  private void allocateWorkers() {
+    ArrayList<Person> workers = new ArrayList<>();
+    for (String requirement : requirements) {
+      for (Person worker : port.getResourcePool()) {
+        if (worker.getSkill().equals(requirement) && worker.getStatus() == WorkerStatus.AVAILABLE) {
+          worker.setLoc("Ship: " + ship.getName());
+          worker.setStatus(WorkerStatus.WORKING);
+          workers.add(worker);
+          break;
+        }
+      }
+    }
+    ship.setWorkers(workers);
+    port.getResourcePool().removeAll(workers);
+    program.updateResourceDisplay();
+  }
+
+  private void deallocateWorkers() {
+    ArrayList<Person> workers = new ArrayList<>();
+    for (Person worker : ship.getWorkers()) {
+      worker.setLoc("Port: " + port.getName());
+      worker.setStatus(WorkerStatus.AVAILABLE);
+      port.getResourcePool().add(worker);
+      workers.add(worker);
+    }
+    ship.getWorkers().removeAll(workers);
+    program.updateResourceDisplay();
+  }
 
   @Override
   public String toString() {
